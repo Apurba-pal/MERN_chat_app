@@ -1,10 +1,11 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/utils.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const signup = async (req, res) => {
   try {
-    res.send("signup route");
+    // res.send("signup route");
     const { fullName, email, password } = req.body;
 
     // Validate input
@@ -89,8 +90,13 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
-    // Fix cookie name by removing the trailing space
-    res.cookie("jwt", "", { maxAge: 0 }); 
+    // Ensure the cookie name matches exactly ("jwt" in this case)
+    res.cookie("jwt", "", {
+      httpOnly: true, // Ensure the cookie is HTTP-only
+      sameSite: "strict", // Prevent cross-site request forgery
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      maxAge: 0, // Expire the cookie immediately
+    });
     res.status(200).json({ msg: "Logged out successfully" });
   } catch (error) {
     console.error("Error in logout:", error);
@@ -116,7 +122,6 @@ export const updateProfile = async (req, res)=>{
     console.error("Error in updateProfile:", error);
     return res.status(500).json({ msg: "Internal Server error" });    
   }
-
 }
 
 
@@ -129,4 +134,4 @@ export const checkAuth = async (req, res) => {
   }
 }
 
-// 1:12:28
+// 1:12:52
