@@ -73,7 +73,7 @@ export const login = async (req, res) => {
     const token = generateToken(user._id);
 
     // Set the token in a cookie
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("jwt", token, { httpOnly: true }); // Fixed cookie name
 
     // Send response
     return res.status(200).json({
@@ -84,9 +84,9 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in login:", error);
-    return res.status(500).json({ msg: "Internal Server error " + error.message }); // Fix cookie name
-  }};
-
+    return res.status(500).json({ msg: "Internal Server error " + error.message });
+  }
+};
 
 export const logout = (req, res) => {
   try {
@@ -104,34 +104,35 @@ export const logout = (req, res) => {
   }
 };
 
-
-export const updateProfile = async (req, res)=>{
+export const updateProfile = async (req, res) => {
   try {
-    const {profilePic } = req.body;
+    const { profilePic } = req.body;
     const userId = req.user._id;
-    if (!profilePic){
-      return res.status(400).json({msg: "Profile picture is required"})
+    if (!profilePic) {
+      return res.status(400).json({ msg: "Profile picture is required" });
     }
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    const updatedUser = await userModel.findByIdAndUpdate( userId, {profilePic:uploadResponse.secure_url}, {new: true});
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { profilePic: uploadResponse.secure_url },
+      { new: true }
+    );
     res.status(200).json({
-      updatedUser
-    })
-
+      updatedUser,
+    });
   } catch (error) {
     console.error("Error in updateProfile:", error);
-    return res.status(500).json({ msg: "Internal Server error" });    
+    return res.status(500).json({ msg: "Internal Server error" });
   }
-}
-
+};
 
 export const checkAuth = async (req, res) => {
   try {
-    res.status(200).json(req.user)
+    res.status(200).json(req.user);
   } catch (error) {
     console.log("Error in checkAuth controller:", error);
     return res.status(500).json({ msg: "Internal Server error" });
   }
-}
+};
 
 // 1:12:52

@@ -28,7 +28,8 @@ const Signup = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col lg:flex-row">
+    <div className="w-full h-full flex flex-col lg:flex-row pt-16">
+      {/* Add pt-16 to account for the navbar height */}
       {/* left side */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12 flex-1">
         <div className="w-full max-w-md space-y-8">
