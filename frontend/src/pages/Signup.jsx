@@ -28,9 +28,9 @@ const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-base-100 w-full">
+    <div className="w-full h-full flex flex-col lg:flex-row">
       {/* left side */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12 w-full h-full">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12 flex-1">
         <div className="w-full max-w-md space-y-8">
           {/* LOGO */}
           <div className="text-center mb-8">
@@ -136,7 +136,7 @@ const Signup = () => {
       </div>
 
       {/* right side */}
-      <div className="hidden lg:flex items-center justify-center bg-base-200 w-full h-full">
+      <div className="hidden lg:flex items-center justify-center bg-base-200 flex-1">
         <img
           src="/sign-up-image.jpeg"
           alt="Sign up illustration"
