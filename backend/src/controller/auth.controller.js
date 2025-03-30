@@ -73,7 +73,11 @@ export const login = async (req, res) => {
     const token = generateToken(user._id);
 
     // Set the token in a cookie
-    res.cookie("jwt", token, { httpOnly: true }); // Fixed cookie name
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
 
     // Send response
     return res.status(200).json({
@@ -108,15 +112,25 @@ export const updateProfile = async (req, res) => {
   try {
     const { profilePic } = req.body;
     const userId = req.user._id;
+
     if (!profilePic) {
       return res.status(400).json({ msg: "Profile picture is required" });
     }
+
+    // Validate file size (assuming base64 string)
+    const fileSizeInBytes = Buffer.from(profilePic.split(",")[1], "base64").length;
+    const maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
+    if (fileSizeInBytes > maxFileSizeInBytes) {
+      return res.status(413).json({ msg: "File size exceeds 5MB limit" });
+    }
+
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
       { new: true }
     );
+
     res.status(200).json({
       updatedUser,
     });
@@ -128,7 +142,7 @@ export const updateProfile = async (req, res) => {
 
 export const checkAuth = async (req, res) => {
   try {
-    res.status(200).json(req.user);
+    res.status(200).json(req.user); // Return the authenticated user's details
   } catch (error) {
     console.log("Error in checkAuth controller:", error);
     return res.status(500).json({ msg: "Internal Server error" });

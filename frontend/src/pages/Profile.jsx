@@ -5,19 +5,23 @@ const Profile = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const maxFileSizeInMB = 5; // 5MB
+    const maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024;
+
+    if (file.size > maxFileSizeInBytes) {
+      alert(`File size exceeds ${maxFileSizeInMB}MB limit`);
+      return;
+    }
 
     const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-
-    reader.onload = async () => {
+    reader.onload = () => {
       const base64Image = reader.result;
       setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
+      updateProfile({ profilePic: base64Image });
     };
+    reader.readAsDataURL(file);
   };
 
   return (
